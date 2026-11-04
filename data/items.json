@@ -1,0 +1,40 @@
+{
+  "project": "DevOps Flask & Git Assignment",
+  "version": "1.0.0",
+  "author": "Rahul Motvani",
+  "branch": "rahulmotvani",
+  "endpoints": [
+    {
+      "name": "Home Dashboard",
+      "path": "/",
+      "method": "GET",
+      "description": "DevOps Flask project landing page"
+    },
+    {
+      "name": "API Data Endpoint",
+      "path": "/api",
+      "method": "GET",
+      "description": "Returns JSON dataset containing tasks and configurations"
+    }
+  ],
+  "items": [
+    {
+      "id": 1,
+      "title": "Configure SSH Keys on GitHub",
+      "status": "completed",
+      "priority": "High"
+    },
+    {
+      "id": 2,
+      "title": "Clone Repository via SSH",
+      "status": "completed",
+      "priority": "High"
+    },
+    {
+      "id": 3,
+      "title": "Create User Branch and Push Flask Project",
+      "status": "in-progress",
+      "priority": "High"
+    }
+  ]
+}
