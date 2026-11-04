@@ -56,7 +56,7 @@ def submit_todo_item():
     todo_document = {
         'itemName': item_name,
         'itemDescription': item_desc,
-        'createdAt': datetime.utcnow().isoformat(),
+        'createdAt': datetime.now().isoformat(),
         'sourceBranch': 'integrated_main'
     }
     if item_id:
