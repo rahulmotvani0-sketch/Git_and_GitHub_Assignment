@@ -39,6 +39,13 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="itemHash" class="form-label fw-semibold">
+                            Item Hash
+                        </label>
+                        <input type="text" class="form-control font-monospace" id="itemHash" name="itemHash" placeholder="e.g. e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855">
+                    </div>
+
+                    <div class="mb-3">
                         <label for="itemName" class="form-label fw-semibold">
                             Item Name <span class="text-danger">*</span>
                         </label>
@@ -77,14 +84,17 @@
                     <table class="table table-striped table-hover mb-0 align-middle">
                         <thead class="table-light">
                             <tr>
+                                <th>Item ID</th>
                                 <th>Item Name</th>
                                 <th>Description</th>
+                                <th>UUID</th>
+                                <th>Hash</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody id="todoTableBody">
                             <tr>
-                                <td colspan="3" class="text-center text-muted py-4">
+                                <td colspan="6" class="text-center text-muted py-4">
                                     <i class="fas fa-info-circle me-1"></i> No tasks recorded yet. Submit the form above to add items to MongoDB!
                                 </td>
                             </tr>
@@ -112,8 +122,11 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving to MongoDB...';
 
             const payload = {
+                itemId: document.getElementById('itemId').value,
                 itemName: document.getElementById('itemName').value,
-                itemDescription: document.getElementById('itemDescription').value
+                itemDescription: document.getElementById('itemDescription').value,
+                itemUuid: document.getElementById('itemUuid').value,
+                itemHash: document.getElementById('itemHash').value
             };
 
             try {
@@ -162,9 +175,12 @@ async function loadSavedTodos() {
         if (data.todos && data.todos.length > 0) {
             tbody.innerHTML = data.todos.map(t => `
                 <tr>
+                    <td><span class="badge bg-secondary">${t.itemId || 'N/A'}</span></td>
                     <td class="fw-bold text-dark">${t.itemName}</td>
                     <td class="text-secondary">${t.itemDescription || '-'}</td>
-                    <td><span class="badge bg-success">Stored in MongoDB</span></td>
+                    <td><small class="text-muted font-monospace">${t.itemUuid ? t.itemUuid.substring(0, 8) + '...' : '-'}</small></td>
+                    <td><small class="text-muted font-monospace">${t.itemHash ? t.itemHash.substring(0, 8) + '...' : '-'}</small></td>
+                    <td><span class="badge bg-success">MongoDB</span></td>
                 </tr>
             `).join('');
         }
