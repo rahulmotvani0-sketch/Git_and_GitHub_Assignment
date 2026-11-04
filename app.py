@@ -23,5 +23,10 @@ def api():
     data = load_data()
     return jsonify(data)
 
+@app.route('/todo')
+def todo_page():
+    """Renders To-Do frontend interface developed on master_1."""
+    return render_template('todo.html')
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

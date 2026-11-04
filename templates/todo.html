@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}To-Do Manager | DevOps Git Assignment{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Breadcrumb / Header -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">To-Do Manager</li>
+            </ol>
+        </nav>
+
+        <!-- Form Card -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="card-title mb-0 fw-bold">
+                    <i class="fas fa-clipboard-list me-2"></i>Create New To-Do Item
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div id="alertPlaceholder"></div>
+
+                <form id="todoForm">
+                    <div class="mb-3">
+                        <label for="itemName" class="form-label fw-semibold">
+                            Item Name <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control form-control-lg" id="itemName" name="itemName" placeholder="Enter task title (e.g. Set up CI/CD Pipeline)" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="itemDescription" class="form-label fw-semibold">
+                            Item Description <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control" id="itemDescription" name="itemDescription" rows="3" placeholder="Provide detailed specifications or steps..." required></textarea>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="/" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Home
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg px-4" id="submitBtn">
+                            <i class="fas fa-paper-plane me-1"></i> Submit To-Do Item
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Task List Card -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold"><i class="fas fa-database me-2"></i>Database Records (MongoDB)</h6>
+                <button class="btn btn-sm btn-outline-light" onclick="loadSavedTodos()">
+                    <i class="fas fa-sync-alt me-1"></i> Refresh
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="todoTableBody">
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-4">
+                                    <i class="fas fa-info-circle me-1"></i> No tasks recorded yet. Submit the form above to add items to MongoDB!
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadSavedTodos();
+    const form = document.getElementById('todoForm');
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const alertPlaceholder = document.getElementById('alertPlaceholder');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving to MongoDB...';
+
+            const payload = {
+                itemName: document.getElementById('itemName').value,
+                itemDescription: document.getElementById('itemDescription').value
+            };
+
+            try {
+                const response = await fetch('/submittodoitem', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    alertPlaceholder.innerHTML = `
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Success!</strong> ${result.message} (MongoDB Document ID: <code>${result.id}</code>)
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    `;
+                    form.reset();
+                    loadSavedTodos();
+                } else {
+                    throw new Error(result.message || 'Submission failed');
+                }
+            } catch (err) {
+                alertPlaceholder.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Error:</strong> ${err.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane me-1"></i> Submit To-Do Item';
+            }
+        });
+    }
+});
+
+async function loadSavedTodos() {
+    try {
+        const res = await fetch('/api/todos');
+        if (!res.ok) return;
+        const data = await res.json();
+        const tbody = document.getElementById('todoTableBody');
+        if (data.todos && data.todos.length > 0) {
+            tbody.innerHTML = data.todos.map(t => `
+                <tr>
+                    <td class="fw-bold text-dark">${t.itemName}</td>
+                    <td class="text-secondary">${t.itemDescription || '-'}</td>
+                    <td><span class="badge bg-success">Stored in MongoDB</span></td>
+                </tr>
+            `).join('');
+        }
+    } catch (e) {
+        console.log("MongoDB endpoint not yet reachable or empty:", e);
+    }
+}
+</script>
+{% endblock %}
