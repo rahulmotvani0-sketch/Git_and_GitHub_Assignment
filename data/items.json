@@ -1,28 +1,46 @@
 {
-  "project": "DevOps Flask & Git Assignment",
-  "version": "1.1.0-mainline",
+  "project": "DevOps Flask & Git Assignment - Enhanced",
+  "version": "2.0.0",
   "author": "Rahul Motvani",
-  "branch": "main",
+  "branch": "rahul_new",
   "endpoints": [
     {
       "name": "Home Dashboard",
       "path": "/",
       "method": "GET",
-      "description": "Main branch landing page with latest mainline updates"
+      "description": "DevOps Flask project landing page (v2.0)"
     },
     {
       "name": "API Data Endpoint",
       "path": "/api",
       "method": "GET",
-      "description": "Main branch mainline API endpoint"
+      "description": "Returns upgraded JSON dataset with real-time status"
     }
   ],
   "items": [
     {
       "id": 1,
-      "title": "Mainline branch maintenance and dependency update",
+      "title": "Configure SSH Keys on GitHub",
+      "status": "verified-done",
+      "priority": "High"
+    },
+    {
+      "id": 2,
+      "title": "Clone Repository via SSH",
+      "status": "verified-done",
+      "priority": "High"
+    },
+    {
+      "id": 3,
+      "title": "Merge rahul_new into main with conflict resolution",
       "status": "in-progress",
-      "priority": "Medium"
+      "priority": "Critical"
+    },
+    {
+      "id": 4,
+      "title": "Implement Parallel Branches master_1 and master_2",
+      "status": "pending",
+      "priority": "High"
     }
   ]
 }
